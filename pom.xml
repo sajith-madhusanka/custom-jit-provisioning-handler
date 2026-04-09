@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.wso2</groupId>
+        <artifactId>wso2</artifactId>
+        <version>1.2</version>
+    </parent>
+
+    <groupId>com.test.wso2.carbon.identity.provisioning.handler</groupId>
+    <artifactId>com.test.wso2.carbon.identity.provisioning.handler</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>Custom Provisioning Handler - APIM 4.5.0</name>
+    <description>
+        JIT provisioning handler that extracts the tenant domain from the 'sub' claim
+        and adjusts parsing when email-as-username is enabled.
+    </description>
+
+    <dependencies>
+        <!-- Authentication framework — provides DefaultProvisioningHandler -->
+        <dependency>
+            <groupId>org.wso2.carbon.identity.framework</groupId>
+            <artifactId>org.wso2.carbon.identity.application.authentication.framework</artifactId>
+            <version>${carbon.identity.framework.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Identity core — provides IdentityUtil.isEmailUsernameEnabled() -->
+        <dependency>
+            <groupId>org.wso2.carbon.identity.framework</groupId>
+            <artifactId>org.wso2.carbon.identity.core</artifactId>
+            <version>${carbon.identity.framework.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- OSGi DS annotations for @Component / @Activate -->
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
+            <version>${ds-annotations.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Commons Lang for StringUtils -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons.lang.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>wso2-public-repository</id>
+            <url>https://maven.wso2.org/nexus/content/repositories/public/</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.1</version>
+                <inherited>true</inherited>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <properties>
+        <carbon.identity.framework.version>5.25.724</carbon.identity.framework.version>
+        <ds-annotations.version>1.2.10</ds-annotations.version>
+        <commons.lang.version>2.6</commons.lang.version>
+    </properties>
+</project>
