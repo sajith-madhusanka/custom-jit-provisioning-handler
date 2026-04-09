@@ -142,9 +142,124 @@ the dummy IDP.
 The **WSO2_API** application registered in IS must be a **SaaS application** so that users
 from all IS tenants/organisations can authenticate through it.
 
-- Customers migrated from older IS versions: the SaaS flag is likely already set. Verify
-  in the legacy Management Console under **Service Providers → WSO2_API → Edit →
-  SaaS Application ✓**.
+Customers migrated from older IS versions will already have this set. For new deployments
+or to verify the current state, use the IS Application Management REST API as described
+in the section below.
+
+> **Note:** The WSO2 IS 7.2.0 legacy Management Console (`/carbon`) is disabled.
+> All administrative operations must be performed through the IS Console or REST APIs.
+
+---
+
+## WSO2_API SaaS Status — IS REST API
+
+Use the IS Application Management REST API to check and enable the SaaS flag on the
+**WSO2_API** application.
+
+**Base URL:** `https://localhost:9444/api/server/v1`
+
+---
+
+### Prerequisites — Create an M2M Application for OAuth2 (recommended)
+
+Skip this section if you intend to use Basic Auth only.
+
+1. Log in to the IS Console (`https://localhost:9444/console`) as `admin`
+2. Go to **Applications** → **New Application** → **M2M Application**
+3. Set **Name:** `APIMSaaSAdmin` → **Create**
+4. On the **API Authorization** tab → **Authorize an API**:
+   - Select **Application Management API**
+   - Enable scopes: `internal_application_mgt_view`, `internal_application_mgt_update`
+   - Click **Finish**
+5. Note the **Client ID** and **Client Secret** from the **Protocol** tab
+
+---
+
+### Option A — Basic Auth
+
+> Avoid using the super-admin (`admin`) credentials in production.
+> Create a dedicated admin user and use those credentials.
+
+```bash
+# Base64-encode "username:password"
+export BASIC=$(echo -n "admin:admin" | base64)
+
+# List applications and find the WSO2_API app ID
+curl -sk -X GET \
+  "https://localhost:9444/api/server/v1/applications?filter=name+eq+WSO2_API" \
+  -H "Authorization: Basic $BASIC" \
+  -H "Accept: application/json"
+```
+
+---
+
+### Option B — OAuth2 Client Credentials
+
+**Step 1 — Obtain an access token:**
+
+```bash
+# Base64-encode "clientId:clientSecret"
+export CREDS=$(echo -n "<clientId>:<clientSecret>" | base64)
+
+# Request token with required scopes
+curl -sk -X POST "https://localhost:9444/oauth2/token" \
+  -H "Authorization: Basic $CREDS" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  --data-urlencode "grant_type=client_credentials" \
+  --data-urlencode "scope=internal_application_mgt_view internal_application_mgt_update"
+```
+
+The response contains `access_token`. Use it as `Bearer <access_token>` in subsequent calls.
+
+**Step 2 — Find the WSO2_API application ID:**
+
+```bash
+curl -sk -X GET \
+  "https://localhost:9444/api/server/v1/applications?filter=name+eq+WSO2_API" \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Accept: application/json"
+```
+
+Note the `id` value from the response (e.g. `"id": "a1b2c3d4-..."`).
+
+---
+
+### Check current SaaS status
+
+```bash
+curl -sk -X GET \
+  "https://localhost:9444/api/server/v1/applications/<applicationId>" \
+  -H "Authorization: Bearer <access_token>" \   # or Basic $BASIC
+  -H "Accept: application/json" \
+  | python3 -m json.tool | grep '"saas"'
+```
+
+Look for `"saas": true` inside the `advancedConfigurations` object:
+
+```json
+{
+  "advancedConfigurations": {
+    "saas": true,
+    ...
+  }
+}
+```
+
+---
+
+### Enable SaaS (PATCH)
+
+If `saas` is `false` or absent, enable it with a PATCH request:
+
+```bash
+curl -sk -X PATCH \
+  "https://localhost:9444/api/server/v1/applications/<applicationId>" \
+  -H "Authorization: Bearer <access_token>" \   # or Basic $BASIC
+  -H "Content-Type: application/json" \
+  -d '{"advancedConfigurations": {"saas": true}}'
+```
+
+A `200 OK` response with the updated application object confirms the change.
 
 ---
 
