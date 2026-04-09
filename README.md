@@ -102,9 +102,23 @@ enable_tenant_qualified_urls = false
 enable_tenanted_sessions = false
 ```
 
-### Subject identifier configuration in the WSO2_API application
+### User Attributes configuration in the WSO2_API application
 
-In the IS Console, open the **WSO2_API** application → **User Attributes** tab → **Subject**:
+In the IS Console, open the **WSO2_API** application → **User Attributes** tab.
+
+#### Profile scope — Username attribute
+
+Expand the **profile** scope and locate the **Username** (`username`) attribute:
+
+- **Requested:** ✓
+- **Mandatory:** ☐ (must remain unchecked)
+
+> Marking Username as Mandatory causes login failures for federated users whose token
+> does not explicitly include the `username` claim. Keep it as Requested only.
+
+#### Subject identifier
+
+Still on the **User Attributes** tab, configure the **Subject** section:
 
 - **Assign alternate subject identifier:** ✓
 - **Subject attribute:** `Username`
