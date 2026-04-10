@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -38,6 +37,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.core</artifactId>
+            <version>${carbon.user.core}</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- OSGi DS annotations for @Component / @Activate -->
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -60,6 +66,22 @@
             <id>wso2-public-repository</id>
             <url>https://maven.wso2.org/nexus/content/repositories/public/</url>
         </repository>
+        <repository>
+            <id>wso2-releases</id>
+            <url>https://maven.wso2.org/nexus/content/repositories/releases/</url>
+        </repository>
+        <repository>
+            <id>wso2-snapshots</id>
+            <url>https://maven.wso2.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>wso2-nexus</id>
+            <url>https://maven.wso2.org/nexus/content/groups/wso2-public/</url>
+        </repository>
+        <repository>
+            <id>mvn-central-repository</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
     </repositories>
 
     <build>
@@ -79,6 +101,7 @@
 
     <properties>
         <carbon.identity.framework.version>5.25.724</carbon.identity.framework.version>
+        <carbon.user.core>4.9.28</carbon.user.core>
         <ds-annotations.version>1.2.10</ds-annotations.version>
         <commons.lang.version>2.6</commons.lang.version>
     </properties>
