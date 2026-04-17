@@ -14,10 +14,6 @@ import java.util.Map;
 public class CustomProvisioningHandler extends DefaultProvisioningHandler {
 
     private static final Log log = LogFactory.getLog(CustomProvisioningHandler.class);
-
-    /** Claim URI used to carry an explicit tenant domain when email-as-username is active. */
-    private static final String TENANT_DOMAIN_CLAIM_URI = "http://wso2.org/claims/tenantDomain";
-
     private static volatile CustomProvisioningHandler instance;
 
     public static CustomProvisioningHandler getInstance() {
@@ -39,6 +35,11 @@ public class CustomProvisioningHandler extends DefaultProvisioningHandler {
     public void handle(List<String> roles, String subject, Map<String, String> attributes,
                        String provisioningUserStoreId, String tenantDomain) throws FrameworkException {
 
+        if( log.isDebugEnabled() ) {
+            log.debug("Roles: " + (roles != null ? roles : "No roles provided") +
+                    ", Subject: " + (subject != null ? subject : "No subject provided") +
+                    ", Attributes: " + (attributes != null ? attributes : "No attributes provided"));
+        }
         String resolvedTenantDomain = MultitenantUtils.getTenantDomain(subject);
         super.handle(roles, subject, attributes, provisioningUserStoreId, resolvedTenantDomain);
     }
